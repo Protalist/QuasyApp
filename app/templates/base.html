@@ -5,6 +5,27 @@
       <script src="{{url_for('static',filename='search.js')}}"></script>
       <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
       <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        function preparebutton(){
+    $(":button").click(function(){
+       addSong(this.id);
+      });
+  }
+
+  function addSong(songParam){
+     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+     $.getJSON($SCRIPT_ROOT + "/_addToSelected",{
+                   s:songParam
+               },function(data){
+                 if(data.result==true){
+                   window.location.href = $SCRIPT_ROOT + "/searchs";
+                   alert("OK")
+                 }
+
+               });
+  }
+    </script>
+
 <title>
     Quasy songs
 </title>
@@ -13,6 +34,10 @@
 
         <div>Microblog: <a href="/index">Home</a></div>
         <div> <a href="{{url_for('searchsong')}}" >Search for songs  </a> </div>
+
+        {%if songs!=[]%}
+        <div>Selected songs = {{songs}}</div>
+        {%endif%}
         <hr>
          {% with messages = get_flashed_messages() %}
         {% if messages %}
