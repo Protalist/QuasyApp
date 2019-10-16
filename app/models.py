@@ -10,3 +10,12 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
+class Song(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(64), index=True, unique=True)
+    Artist = db.Column(db.String(120), index=True, unique=True)
+    Year  = db.Column(db.Integer, nullable=False, default=0)
+
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
