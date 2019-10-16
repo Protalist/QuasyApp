@@ -8,7 +8,6 @@ verify_ssl = true
 [packages]
 flask = "*"
 sqlalchemy = "*"
-flaks-migrate = "*"
 flask-migrate = "*"
 
 [requires]
