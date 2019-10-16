@@ -1,24 +1,80 @@
-from flask import render_template, flash, redirect
+from flask import render_template, flash, redirect, url_for, request, jsonify
+from flask_login import current_user, login_user, logout_user
+from werkzeug.urls import url_parse
 
-from app import app
-from app.models import Song
-from app.forms import LoginForm
+from app import app, db
+from app.models import Song, User
+from app.forms import LoginForm, RegistrationForm
+
 
 @app.route('/')
 @app.route('/index')
 def index():
     return "Hello, World!"
 
+
 @app.route('/song')
 def songs():
-    songs=Song.query.all()
+    songs = Song.query.all()
     return render_template('songs.html', songs=songs)
+
 
 @app.route('/login')
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        flash('Login requested for user {}, remember_me={}'.format(
-            form.username.data, form.remember_me.data))
-        return redirect('/index')
-    return render_template('login.html', title='Sign In', form=form)
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index')
+        return redirect(next_page)
+    return render_template('forms_login.html', title='Sign In', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('login'))
+    return render_template('register.html', title='Register', form=form)
+
+
+@app.route("/searchs", methods=["GET"])
+def searchsong():
+    if request.method == "GET":
+        return render_template("search.html")
+    return "HELLO"
+
+
+# ajax response
+@app.route('/_retrievesong', methods=['POST'])
+def cercasong():
+    if request.method == "POST":
+        name = request.form['songname']
+        if len(name) == 0:
+            return jsonify(result="null")
+        else:
+            l = []
+
+            l.extend(db.session.query(Song).filter(Song.Name.like(name)).all())
+            l.extend(db.session.query(Song).filter(Song.Artist.like(name)).all())
+            return jsonify(result=l)
