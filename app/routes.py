@@ -74,7 +74,7 @@ def cercasong():
             return jsonify(result="null")
         else:
             l = []
-
+            name == "%{}%".format(name)
             l.extend(db.session.query(Song).filter(Song.Name.like(name)).all())
             l.extend(db.session.query(Song).filter(Song.Artist.like(name)).all())
             return jsonify(result=l)

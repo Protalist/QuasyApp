@@ -29,8 +29,8 @@ $(document).ready(function() {
           var lis_possibilities = data.result;
           var res = document.getElementById("Res");
           var n = document.createElement("p");
-
-          for each (var i in lis_possibilities){
+          console.log(lis_possibilities.length)
+          for (var i in lis_possibilities){
                n.appendChild(document.createTextNode(i));
                res.appendChild(n);
                n = document.createElement("p");
