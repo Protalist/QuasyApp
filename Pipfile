@@ -8,8 +8,8 @@ verify_ssl = true
 [packages]
 flask = "*"
 sqlalchemy = "*"
-flaks-migrate = "*"
 flask-migrate = "*"
+
 
 [requires]
 python_version = "3.7"
