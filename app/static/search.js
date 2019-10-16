@@ -1,6 +1,6 @@
 $(document).ready(function() {
   $("form#songs").submit(function(ev){
-    alert("CIAO");
+
     ev.preventDefault();
     var songname = new FormData(this);
     var risp;
@@ -30,8 +30,8 @@ $(document).ready(function() {
           var res = document.getElementById("Res");
           var n = document.createElement("p");
           console.log(lis_possibilities.length)
-          for (var i in lis_possibilities){
-               n.appendChild(document.createTextNode(i));
+          for (var i=0; i<lis_possibilities.length;i++){
+               n.appendChild(document.createTextNode(lis_possibilities[i]));
                res.appendChild(n);
                n = document.createElement("p");
           }

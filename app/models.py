@@ -31,4 +31,4 @@ class Song(db.Model):
     Year  = db.Column(db.Integer, nullable=False, default=0)
 
     def __repr__(self):
-        return '<User {}>'.format(self.username)
+        return '<Song {},{},{}>'.format(self.Name,self.Artist,str(self.Year))
