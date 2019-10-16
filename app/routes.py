@@ -7,6 +7,7 @@ from app.models import Song, User
 from app.forms import LoginForm, RegistrationForm
 
 LIST_SELECTED_SONG = []
+CURRENT_SONG = Song()
 
 @app.route('/')
 @app.route('/index')
@@ -84,3 +85,37 @@ def cercasong():
                 songsSet.add(str(s))
             print(songsSet)
             return jsonify(result=list(songsSet))
+
+@app.route('/listdj' ,methods=['GET'])
+def getlist():
+    if len(LIST_SELECTED_SONG) ==0:
+        for i in range(0,4):
+            LIST_SELECTED_SONG.append(Song(Name="song"+str(i),Artist="Artist"+str(i), Year=i))
+        #print(LIST_SELECTED_SONG[i])
+        CURRENT_SONG=LIST_SELECTED_SONG[0];
+    return render_template("dj.html",songs=LIST_SELECTED_SONG,length=len(LIST_SELECTED_SONG))
+
+
+@app.route('/_popsong',methods=['POST'])
+def pop():
+    if len(LIST_SELECTED_SONG)==0:
+        return  jsonify(result="null")
+    LIST_SELECTED_SONG.pop(0)
+    CURRENT_SONG=LIST_SELECTED_SONG[0]
+    return jsonify(result=str(LIST_SELECTED_SONG[0]))
+
+@app.route('/_update',methods=['GET'])
+def updateList():
+    find=False
+    songsSet = set()
+    for s in LIST_SELECTED_SONG:
+        if(CURRENT_SONG.__eq__(s)):
+            find=True
+        if(find==False):
+            continue
+        if(find==True):
+            songsSet.add(str(s))
+    if (songsSet==None):
+        return jsonify(result="null")
+    return jsonify(result=list(songsSet))
+
