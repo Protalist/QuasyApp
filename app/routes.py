@@ -11,7 +11,14 @@ LIST_SELECTED_SONG = []
 @app.route('/')
 @app.route('/index')
 def index():
-    return "Hello, World!"
+
+    if (len(LIST_SELECTED_SONG) ==0):
+        return "Hello, World!"
+    else:
+
+
+
+        return render_template("base.html", songs=LIST_SELECTED_SONG)
 
 
 @app.route('/song')
@@ -62,7 +69,7 @@ def register():
 @app.route("/searchs", methods=["GET"])
 def searchsong():
     if request.method == "GET":
-        return render_template("search.html")
+        return render_template("search.html",songs=LIST_SELECTED_SONG)
     return "HELLO"
 
 
@@ -77,10 +84,23 @@ def cercasong():
             l = []
             name ="{}%".format(name)
             songsSet = set()
-            print(name)
+
             l.extend(db.session.query(Song).filter(Song.Name.like(name)).all())
             l.extend(db.session.query(Song).filter(Song.Artist.like(name)).all())
             for s in l:
                 songsSet.add(str(s))
-            print(songsSet)
+
             return jsonify(result=list(songsSet))
+
+
+@app.route('/_addToSelected',methods=["GET"])
+def addtoList():
+    s = request.args.get('s', 0)
+    nomeSong,artista,anno =s.split(",")
+    print(nomeSong)
+    print(artista)
+    print(anno)
+    S = Song.query.filter_by(Name=nomeSong.replace(" ",""),Artist=artista,Year=anno).first()
+    LIST_SELECTED_SONG.append(str(S))
+
+    return jsonify(result=True)
