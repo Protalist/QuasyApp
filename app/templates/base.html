@@ -32,7 +32,7 @@
 </head>
     <body>
 
-        <div>Microblog: <a href="/index">Home</a></div>
+        <div>Microblog: <a href="{{url_for('searchsong')}}">Home</a></div>
         <div> <a href="{{url_for('searchsong')}}" >Search for songs  </a> </div>
 
         {%if songs!=[]%}

@@ -7,12 +7,13 @@ from app.models import Song, User
 from app.forms import LoginForm, RegistrationForm
 
 LIST_SELECTED_SONG = []
-LAST_SONG = Song()
+LAST_SONG = None
+
 
 @app.route('/')
 @app.route('/index')
 def index():
-    if (len(LIST_SELECTED_SONG) ==0):
+    if (len(LIST_SELECTED_SONG) == 0):
         return "Hello, World!"
     else:
         return render_template("base.html", songs=LIST_SELECTED_SONG)
@@ -24,7 +25,7 @@ def songs():
     return render_template('songs.html', songs=songs)
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -67,10 +68,10 @@ def register():
 @app.route("/searchs", methods=["GET"])
 @login_required
 def searchsong():
-    if acces_permission(current_user.role,0):
-        render_template(url_for("index.html"))
+    if acces_permission(current_user.role, 1):
+        return redirect(url_for('index'))
     if request.method == "GET":
-        return render_template("search.html",songs=LIST_SELECTED_SONG)
+        return render_template("search.html", songs=LIST_SELECTED_SONG)
     return "HELLO"
 
 
@@ -83,7 +84,7 @@ def cercasong():
             return jsonify(result="null")
         else:
             l = []
-            name ="{}%".format(name)
+            name = "{}%".format(name)
             songsSet = set()
 
             l.extend(db.session.query(Song).filter(Song.Name.like(name)).all())
@@ -94,57 +95,58 @@ def cercasong():
             return jsonify(result=list(songsSet))
 
 
-@app.route('/_addToSelected',methods=["GET"])
+@app.route('/_addToSelected', methods=["GET"])
 def addtoList():
     s = request.args.get('s', 0)
-    nomeSong,artista,anno =s.split(",")
+    nomeSong, artista, anno = s.split(",")
     print(nomeSong)
     print(artista)
     print(anno)
-    S = Song.query.filter_by(Name=nomeSong.replace(" ",""),Artist=artista,Year=anno).first()
+    S = Song.query.filter_by(Name=nomeSong.replace(" ", ""), Artist=artista, Year=anno).first()
     LIST_SELECTED_SONG.append(str(S))
 
     return jsonify(result=True)
 
-@app.route('/listdj' ,methods=['GET'])
+
+@app.route('/listdj', methods=['GET'])
 @login_required
 def getlist():
-    if acces_permission(current_user.role,1):
-        render_template(url_for("index.html"))
-    if len(LIST_SELECTED_SONG) ==0:
-        for i in range(0,4):
-            LIST_SELECTED_SONG.append(Song(Name="song"+str(i),Artist="Artist"+str(i), Year=i))
-        #print(LIST_SELECTED_SONG[i])
-        LAST_SONG=LIST_SELECTED_SONG[len(LIST_SELECTED_SONG)-1];
-    return render_template("dj.html",songs=LIST_SELECTED_SONG,length=len(LIST_SELECTED_SONG))
+    if acces_permission(current_user.role, 1):
+        return redirect(url_for('index'))
+    if len(LIST_SELECTED_SONG) == 0:
+        for i in range(0, 4):
+            LIST_SELECTED_SONG.append(Song(Name="song" + str(i), Artist="Artist" + str(i), Year=i))
+        # print(LIST_SELECTED_SONG[i])
+        LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG) - 1];
+    return render_template("dj.html", songs=LIST_SELECTED_SONG, length=len(LIST_SELECTED_SONG))
 
 
-@app.route('/_popsong',methods=['POST'])
+@app.route('/_popsong', methods=['POST'])
 def pop():
-    if len(LIST_SELECTED_SONG)==0:
-        return  jsonify(result="null")
+    if len(LIST_SELECTED_SONG) == 1:
+        return jsonify(result="null")
     LIST_SELECTED_SONG.pop(0)
     return jsonify(result=str(LIST_SELECTED_SONG[0]))
 
-@app.route('/_update',methods=['GET'])
-def updateList():
-    find=False
-    songsSet = set()
-    for s in LIST_SELECTED_SONG:
-        if(LAST_SONG.__eq__(s)):
-            find=True
-        if(find==False):
-            continue
-        if(find==True):
-            songsSet.add(str(s))
-    if (songsSet==None):
-        return jsonify(result="null")
-    LAST_SONG=LIST_SELECTED_SONG(len(LIST_SELECTED_SONG))
-    return jsonify(result=list(songsSet))
 
+@app.route('/_update', methods=['GET'])
+def updateList():
+    find = False
+    sonsSet = set()
+    for s in LIST_SELECTED_SONG:
+        if LAST_SONG == s:
+            find = True
+        if not find:
+            continue
+        if (find == True):
+            sonsSet.add(str(s))
+    if (sonsSet == None):
+        return jsonify(result="null")
+    LAST_SONG = LIST_SELECTED_SONG(len(LIST_SELECTED_SONG))
+    return jsonify(result=list(sonsSet))
 
 
 def acces_permission(cuser, perm):
-    if(cuser==perm)
-        returnb True
+    if (cuser == perm):
+        return True
     return False

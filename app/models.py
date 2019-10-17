@@ -32,3 +32,10 @@ class Song(db.Model):
 
     def __repr__(self):
         return '<Song {},{},{}>'.format(self.Name,self.Artist,str(self.Year))
+
+    def __eq__(self, other):
+        if not isinstance(other, Song):
+            # don't attempt to compare against unrelated types
+            return NotImplemented
+
+        return self.Name == other.Name and self.Artist == other.Artist
