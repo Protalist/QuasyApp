@@ -68,7 +68,7 @@ def register():
 @app.route("/searchs", methods=["GET"])
 @login_required
 def searchsong():
-    if acces_permission(current_user.role, 1):
+    if not acces_permission(current_user.role, 1):
         return redirect(url_for('index'))
     if request.method == "GET":
         return render_template("search.html", songs=LIST_SELECTED_SONG)
@@ -111,7 +111,7 @@ def addtoList():
 @app.route('/listdj', methods=['GET'])
 @login_required
 def getlist():
-    if acces_permission(current_user.role, 1):
+    if not acces_permission(current_user.role, 1):
         return redirect(url_for('index'))
     if len(LIST_SELECTED_SONG) == 0:
         for i in range(0, 4):
@@ -149,4 +149,5 @@ def updateList():
 def acces_permission(cuser, perm):
     if (cuser == perm):
         return True
-    return False
+    return True
+
