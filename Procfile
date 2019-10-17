@@ -1,1 +1,1 @@
-web: flask run
+web: export FLASK_APP=quasi flask run
