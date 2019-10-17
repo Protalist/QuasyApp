@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from app import app, db
@@ -12,13 +12,9 @@ LAST_SONG = Song()
 @app.route('/')
 @app.route('/index')
 def index():
-
     if (len(LIST_SELECTED_SONG) ==0):
         return "Hello, World!"
     else:
-
-
-
         return render_template("base.html", songs=LIST_SELECTED_SONG)
 
 
@@ -47,6 +43,7 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
@@ -68,7 +65,10 @@ def register():
 
 
 @app.route("/searchs", methods=["GET"])
+@login_required
 def searchsong():
+    if acces_permission(current_user.role,0):
+        render_template(url_for("index.html"))
     if request.method == "GET":
         return render_template("search.html",songs=LIST_SELECTED_SONG)
     return "HELLO"
@@ -107,7 +107,10 @@ def addtoList():
     return jsonify(result=True)
 
 @app.route('/listdj' ,methods=['GET'])
+@login_required
 def getlist():
+    if acces_permission(current_user.role,1):
+        render_template(url_for("index.html"))
     if len(LIST_SELECTED_SONG) ==0:
         for i in range(0,4):
             LIST_SELECTED_SONG.append(Song(Name="song"+str(i),Artist="Artist"+str(i), Year=i))
@@ -139,3 +142,9 @@ def updateList():
     LAST_SONG=LIST_SELECTED_SONG(len(LIST_SELECTED_SONG))
     return jsonify(result=list(songsSet))
 
+
+
+def acces_permission(cuser, perm):
+    if(cuser==perm)
+        returnb True
+    return False
