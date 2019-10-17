@@ -10,11 +10,15 @@ LIST_SELECTED_SONG = []
 LAST_SONG = None
 
 
+
 @app.route('/')
 @app.route('/index')
 def index():
     if (len(LIST_SELECTED_SONG) == 0):
-        return "Hello, World!"
+        s=""
+        if current_user.is_authenticated is False:
+            s= '<br> logga deficiè'
+        return "HOME BARBONA"+s
     else:
         return render_template("base.html", songs=LIST_SELECTED_SONG)
 
@@ -40,7 +44,7 @@ def login():
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
         return redirect(next_page)
-    return render_template('forms_login.html', title='Sign In', form=form)
+    return render_template('forms_login.html', title='Sign In',songs=[], form=form)
 
 
 @app.route('/logout')
@@ -68,7 +72,7 @@ def register():
 @app.route("/searchs", methods=["GET"])
 @login_required
 def searchsong():
-    if not acces_permission(current_user.role, 1):
+    if not acces_permission(current_user.role, 0):
         return redirect(url_for('index'))
     if request.method == "GET":
         return render_template("search.html", songs=LIST_SELECTED_SONG)
@@ -117,7 +121,9 @@ def getlist():
         for i in range(0, 4):
             LIST_SELECTED_SONG.append(Song(Name="song" + str(i), Artist="Artist" + str(i), Year=i))
         # print(LIST_SELECTED_SONG[i])
-        LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG) - 1];
+        global  LAST_SONG
+        if(len(LIST_SELECTED_SONG)>0):
+            LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG) - 1];
     return render_template("dj.html", songs=LIST_SELECTED_SONG, length=len(LIST_SELECTED_SONG))
 
 
@@ -133,6 +139,7 @@ def pop():
 def updateList():
     find = False
     sonsSet = set()
+    global LAST_SONG
     for s in LIST_SELECTED_SONG:
         if LAST_SONG == s:
             find = True
@@ -142,12 +149,13 @@ def updateList():
             sonsSet.add(str(s))
     if (sonsSet == None):
         return jsonify(result="null")
-    LAST_SONG = LIST_SELECTED_SONG(len(LIST_SELECTED_SONG))
+    if len(LIST_SELECTED_SONG)>0:
+        LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG)-1]
     return jsonify(result=list(sonsSet))
 
 
 def acces_permission(cuser, perm):
     if (cuser == perm):
         return True
-    return True
+    return False
 
