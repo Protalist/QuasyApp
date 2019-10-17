@@ -7,7 +7,7 @@ from app.models import Song, User
 from app.forms import LoginForm, RegistrationForm
 
 LIST_SELECTED_SONG = []
-CURRENT_SONG = Song()
+LAST_SONG = Song()
 
 @app.route('/')
 @app.route('/index')
@@ -112,7 +112,7 @@ def getlist():
         for i in range(0,4):
             LIST_SELECTED_SONG.append(Song(Name="song"+str(i),Artist="Artist"+str(i), Year=i))
         #print(LIST_SELECTED_SONG[i])
-        CURRENT_SONG=LIST_SELECTED_SONG[0];
+        LAST_SONG=LIST_SELECTED_SONG[len(LIST_SELECTED_SONG)-1];
     return render_template("dj.html",songs=LIST_SELECTED_SONG,length=len(LIST_SELECTED_SONG))
 
 
@@ -121,7 +121,6 @@ def pop():
     if len(LIST_SELECTED_SONG)==0:
         return  jsonify(result="null")
     LIST_SELECTED_SONG.pop(0)
-    CURRENT_SONG=LIST_SELECTED_SONG[0]
     return jsonify(result=str(LIST_SELECTED_SONG[0]))
 
 @app.route('/_update',methods=['GET'])
@@ -129,7 +128,7 @@ def updateList():
     find=False
     songsSet = set()
     for s in LIST_SELECTED_SONG:
-        if(CURRENT_SONG.__eq__(s)):
+        if(LAST_SONG.__eq__(s)):
             find=True
         if(find==False):
             continue
@@ -137,5 +136,6 @@ def updateList():
             songsSet.add(str(s))
     if (songsSet==None):
         return jsonify(result="null")
+    LAST_SONG=LIST_SELECTED_SONG(len(LIST_SELECTED_SONG))
     return jsonify(result=list(songsSet))
 
