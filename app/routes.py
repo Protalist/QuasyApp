@@ -138,12 +138,13 @@ def updateList():
     sonsSet = set()
     global LAST_SONG
     for s in LIST_SELECTED_SONG:
+        if (find == True):
+            sonsSet.add(str(s))
         if LAST_SONG == s:
             find = True
         if not find:
             continue
-        if (find == True):
-            sonsSet.add(str(s))
+        
     if (sonsSet == None):
         return jsonify(result="null")
     if len(LIST_SELECTED_SONG)>0:

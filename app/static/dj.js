@@ -57,7 +57,7 @@ $(document).ready(function() {
          }
         var strs= data.result;
         for (var i=0; i<strs.length;i++){
-             var song= data.result.split(" ")[1].split(",");
+             var song= strs[i].split(" ")[1].split(",");
              $("#list").append("<li is=\'"+song[0]+"\'>"+song[0]+","+song[1]+"</li>");
         }
      }
