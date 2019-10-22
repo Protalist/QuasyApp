@@ -15,16 +15,9 @@ LAST_SONG = None
 @app.route('/index')
 @login_required
 def index():
-    if (len(LIST_SELECTED_SONG) == 0):
-        s=""
-        if current_user.is_authenticated is False:
-            s= '<br> logga deficiè'
-        
-        return redirect(url_for('searchsong'))
-    else:
-        if not acces_permission(current_user.role, 1):
-            return redirect(url_for('getlist'))
-        return render_template("base.html", songs=LIST_SELECTED_SONG)
+    if not acces_permission(current_user.role, 0):
+        return redirect(url_for('getlist'))
+    return render_template("base.html", songs=LIST_SELECTED_SONG)
 
 
 @app.route('/song')
