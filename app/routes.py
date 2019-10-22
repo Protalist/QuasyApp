@@ -13,13 +13,17 @@ LAST_SONG = None
 
 @app.route('/')
 @app.route('/index')
+@login_required
 def index():
     if (len(LIST_SELECTED_SONG) == 0):
         s=""
         if current_user.is_authenticated is False:
             s= '<br> logga deficiè'
-        return "HOME BARBONA"+s
+        
+        return redirect(url_for('searchsong'))
     else:
+        if not acces_permission(current_user.role, 1):
+            return redirect(url_for('getlist'))
         return render_template("base.html", songs=LIST_SELECTED_SONG)
 
 
@@ -107,7 +111,7 @@ def addtoList():
     print(artista)
     print(anno)
     S = Song.query.filter_by(Name=nomeSong.replace(" ", ""), Artist=artista, Year=anno).first()
-    LIST_SELECTED_SONG.append(str(S))
+    LIST_SELECTED_SONG.append(Song(Name=nomeSong.strip(), Artist=artista.strip(), Year=anno))
 
     return jsonify(result=True)
 
@@ -117,19 +121,19 @@ def addtoList():
 def getlist():
     if not acces_permission(current_user.role, 1):
         return redirect(url_for('index'))
-    if len(LIST_SELECTED_SONG) == 0:
-        for i in range(0, 4):
-            LIST_SELECTED_SONG.append(Song(Name="song" + str(i), Artist="Artist" + str(i), Year=i))
+    #if len(LIST_SELECTED_SONG) == 0:
+     #   for i in range(0, 4):
+      #      LIST_SELECTED_SONG.append(Song(Name="song" + str(i), Artist="Artist" + str(i), Year=i))
         # print(LIST_SELECTED_SONG[i])
-        global  LAST_SONG
-        if(len(LIST_SELECTED_SONG)>0):
-            LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG) - 1];
+    global  LAST_SONG
+    if(len(LIST_SELECTED_SONG)>0):
+        LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG) - 1]
     return render_template("dj.html", songs=LIST_SELECTED_SONG, length=len(LIST_SELECTED_SONG))
 
 
 @app.route('/_popsong', methods=['POST'])
 def pop():
-    if len(LIST_SELECTED_SONG) == 1:
+    if len(LIST_SELECTED_SONG) == 0:
         return jsonify(result="null")
     LIST_SELECTED_SONG.pop(0)
     return jsonify(result=str(LIST_SELECTED_SONG[0]))

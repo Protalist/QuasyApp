@@ -2,8 +2,17 @@
 
 {% block content %}
     <script src="{{url_for('static',filename='dj.js')}}"></script>
-    <h2>Current song <i id="current">{{songs[0].Name}},
-        {{songs[0].Artist}}</i></h2> <input type='button' value='Status Update'>
+    <h2>Current song 
+         {%if length!=0%}
+    <i id="current">{{songs[0].Name}},
+        {{songs[0].Artist}}</i>
+    {%else%}
+        <i id="current"></i>
+    {%endif%}
+</h2> 
+<input type='button' value='Status Update'>
+
+
    <div id="list">
 
 
