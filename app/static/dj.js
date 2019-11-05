@@ -19,9 +19,10 @@ $(document).ready(function() {
      },
      complete : function(jXHR,status) {
         var data = $.parseJSON(jXHR.responseText);
-            alert(data.result);
+        alert(data.result);
         if (data.result == "null"){
             $('#current').text("No Song to play");
+            $('ol').children().remove();
            return;
          }
         var strs= data.result.split(" ")[1].split(",")
@@ -36,7 +37,6 @@ $(document).ready(function() {
 
   setInterval(function() {
         var risp;
-
     $.ajax({
       processData: false,
       contentType: false,
@@ -56,10 +56,15 @@ $(document).ready(function() {
            return;
          }
         var strs= data.result;
+        var c=$("ol").children()
+        c.remove();
+        console.log("data.result= "+strs)
         for (var i=0; i<strs.length;i++){
              var song= strs[i].split(" ")[1].split(",");
-             $("#list").append("<li is=\'"+song[0]+"\'>"+song[0]+","+song[1]+"</li>");
+             $("ol").append("<li id=\'"+song[0]+"\'>"+song[0]+","+song[1]+"</li>");
         }
      }
       });
   }, 5000);
+
+  

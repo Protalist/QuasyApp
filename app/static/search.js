@@ -40,11 +40,12 @@ $(document).ready(function() {
                console.log(s);
                b.setAttribute("type","button");
                b.setAttribute("id",s);
-
+               b.setAttribute("class","waves-effect waves-light btn-small btn-small");
                b.setAttribute("value","aggiungi");
 
                n.appendChild(b);
                res.appendChild(n);
+               'play_arrow'
                n = document.createElement("p");
                b = document.createElement("input")
           }

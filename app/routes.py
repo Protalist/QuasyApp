@@ -17,6 +17,8 @@ LAST_SONG = None
 def index():
     if not acces_permission(current_user.role, 0):
         return redirect(url_for('getlist'))
+    else:
+        return redirect(url_for('searchsong'))
     return render_template("base.html", songs=LIST_SELECTED_SONG)
 
 
@@ -134,6 +136,17 @@ def pop():
 
 @app.route('/_update', methods=['GET'])
 def updateList():
+    sonsSet = []
+    if len(LIST_SELECTED_SONG)<=1:
+        return jsonify(result="null")
+    for s in range(1,len(LIST_SELECTED_SONG)):
+        sonsSet.append(str(LIST_SELECTED_SONG[s]))
+    
+    LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG)-1]
+    print(sonsSet)
+
+    return jsonify(result=list(sonsSet))
+"""def updateList():
     find = False
     sonsSet = set()
     global LAST_SONG
@@ -149,7 +162,7 @@ def updateList():
         return jsonify(result="null")
     if len(LIST_SELECTED_SONG)>0:
         LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG)-1]
-    return jsonify(result=list(sonsSet))
+    return jsonify(result=list(sonsSet))"""
 
 
 def acces_permission(cuser, perm):

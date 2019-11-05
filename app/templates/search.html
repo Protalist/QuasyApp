@@ -2,10 +2,20 @@
 
 {% block content %}
 <form  id="songs"  method="post" >
-  Song name:<br>
-  <input id="songname" type="text" name="songname"><br>
-   <input type='submit' value="Search"/>
+
+    <p><div class="input-field inline col s8">
+ 
+  <input id="songname" type="text" name="songname">
+  <label for="songname">Song name</label>
+
+    </div>
+ 
+  </p>
+  <button class=" waves-effect waves-default btn" type="submit" name="action">Search
+      <i class="material-icons right">send</i>
+    </button>
 </form>
+
 
 <div id="Res"></div>
 

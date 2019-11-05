@@ -14,11 +14,12 @@
 
 
    <div id="list">
-
+    <ol>
 
     {%for i in range(1,length)%}
 
     <li id="{{songs[i].Name}}">{{songs[i].Name}}, {{songs[i].Artist}}</li>
     {%endfor%}
+</ol>
    </div>
 {% endblock %}
