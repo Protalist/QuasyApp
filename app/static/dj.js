@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  $('input').on('click',function(ev){
+  $('#changesong').on('click',function(ev){
     alert("ciao");
     ev.preventDefault();
     var risp;

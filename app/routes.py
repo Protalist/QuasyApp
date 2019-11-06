@@ -4,7 +4,9 @@ from werkzeug.urls import url_parse
 
 from app import app, db
 from app.models import Song, User
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, uploadFile
+
+import pandas as pd
 
 LIST_SELECTED_SONG = []
 LAST_SONG = None
@@ -111,11 +113,17 @@ def addtoList():
     return jsonify(result=True)
 
 
-@app.route('/listdj', methods=['GET'])
+@app.route('/listdj', methods=['GET','POST'])
 @login_required
 def getlist():
     if not acces_permission(current_user.role, 1):
         return redirect(url_for('index'))
+    
+    form=uploadFile()
+    if form.validate_on_submit():
+         db = pd.read_csv(songs.data.filename, sep='\t', header=None, names=['title','artist', 'years'])
+         for i in range(0,len(db.title)):
+             print("ciao")
     #if len(LIST_SELECTED_SONG) == 0:
      #   for i in range(0, 4):
       #      LIST_SELECTED_SONG.append(Song(Name="song" + str(i), Artist="Artist" + str(i), Year=i))
@@ -123,7 +131,7 @@ def getlist():
     global  LAST_SONG
     if(len(LIST_SELECTED_SONG)>0):
         LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG) - 1]
-    return render_template("dj.html", songs=LIST_SELECTED_SONG, length=len(LIST_SELECTED_SONG))
+    return render_template("dj.html", songs=LIST_SELECTED_SONG, length=len(LIST_SELECTED_SONG),form=form)
 
 
 @app.route('/_popsong', methods=['POST'])
@@ -137,33 +145,16 @@ def pop():
 @app.route('/_update', methods=['GET'])
 def updateList():
     sonsSet = []
-    if len(LIST_SELECTED_SONG)<=1:
+    if len(LIST_SELECTED_SONG)<=0:
         return jsonify(result="null")
     for s in range(1,len(LIST_SELECTED_SONG)):
         sonsSet.append(str(LIST_SELECTED_SONG[s]))
     
     LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG)-1]
     print(sonsSet)
-
-    return jsonify(result=list(sonsSet))
-"""def updateList():
-    find = False
-    sonsSet = set()
-    global LAST_SONG
-    for s in LIST_SELECTED_SONG:
-        if (find == True):
-            sonsSet.add(str(s))
-        if LAST_SONG == s:
-            find = True
-        if not find:
-            continue
-        
-    if (sonsSet == None):
+    if len(sonsSet)<=0:
         return jsonify(result="null")
-    if len(LIST_SELECTED_SONG)>0:
-        LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG)-1]
-    return jsonify(result=list(sonsSet))"""
-
+    return jsonify(result=list(sonsSet))
 
 def acces_permission(cuser, perm):
     if (cuser == perm):

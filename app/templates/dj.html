@@ -1,25 +1,70 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <script src="{{url_for('static',filename='dj.js')}}"></script>
-    <h2>Current song 
-         {%if length!=0%}
-    <i id="current">{{songs[0].Name}},
-        {{songs[0].Artist}}</i>
-    {%else%}
-        <i id="current"></i>
-    {%endif%}
-</h2> 
-<input type='button' value='Status Update'>
+<div class="row">
+    <div class="col s8">
+        <script src="{{url_for('static',filename='dj.js')}}"></script>
+        <script>
+         document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.collapsible');
+    var instances = M.Collapsible.init(elems);
+  });
+
+        </script>
+        <h2>Current song
+            {%if length!=0%}
+            <i id="current">{{songs[0].Name}},
+                {{songs[0].Artist}}</i>
+            {%else%}
+            <i id="current"></i>
+            {%endif%}
+        </h2>
+        
+        <button class="btn-floating waves-effect waves-light" xname="action"id="changesong">
+            <i class="material-icons right">autorenew</i>
+          </button>
+
+        <div id="list">
+            <ol>
+
+                {%for i in range(1,length)%}
+
+                <li id="{{songs[i].Name}}">{{songs[i].Name}}, {{songs[i].Artist}}</li>
+                {%endfor%}
+            </ol>
+        </div>
+    </div>
+    <div class="col s7">
+        
 
 
-   <div id="list">
-    <ol>
 
-    {%for i in range(1,length)%}
+        <ul class="collapsible">
+            <li>
+              <div class="collapsible-header"><i class="material-icons">filter_drama</i>Uploadfile</div>
+              <div class="collapsible-body"><span><h4>Upload a file</h4>
+                <form action="" method="post" novalidate>
+                    {{ form.hidden_tag() }}
+                    <p>
+                        <div class="file-field input-field">
+                        <div class="btn">
+                          <span>File</span>
+                        {{ form.songs() }}
+                        </div>
+                        <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text">
+                              </div>
+                    </div>
+                    {% for error in form.songs.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                        </p><br/>
+                        <input type="submit">
+                    
+                </form></span></div>
+            </li>
+            </ul>
+    </div>
+</div>
 
-    <li id="{{songs[i].Name}}">{{songs[i].Name}}, {{songs[i].Artist}}</li>
-    {%endfor%}
-</ol>
-   </div>
 {% endblock %}

@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField,FileField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
+
+import pandas as pd
 
 from app.models import User
 
@@ -29,3 +31,12 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+
+class uploadFile(FlaskForm):
+    songs = FileField("Songs",validators=[DataRequired()])
+
+    def validate_songs(self,songs):
+        try:
+            db = pd.read_csv(songs.data.filename, sep='\t', header=None, names=['title','artist', 'years'])
+        except:
+            raise ValidationError('Please use a file in this format "title \\t artist \\t years " ')
