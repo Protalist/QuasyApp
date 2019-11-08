@@ -63,9 +63,9 @@
                         <input type="submit">
                     
                 </form>
-                <form action="/deletesong" method="post">
+                <form action="/deletesong" method="post" id="delete">
                     <input type="hidden" name="_method" value="DELETE">
-                    <button type="submit">Deleteall</button>
+                    <button type="submit" >Deleteall</button>
                 </form>
             
             </span></div>
@@ -74,5 +74,15 @@
             </ul>
     </div>
 </div>
+<script> 
+    function show_alert(e){
+        if(!confirm("Do you really want to do this?")) {
+            e.preventDefault(e)
+            return false;
+    }
+    this.form.submit();
+  }
+  $("#delete").submit(function(e){show_alert(e)});
+  </script>
 
 {% endblock %}
