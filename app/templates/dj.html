@@ -43,10 +43,10 @@
             <li>
               <div class="collapsible-header"><i class="material-icons">filter_drama</i>Uploadfile</div>
               <div class="collapsible-body"><span><h4>Upload a file</h4>
-                <form action="" method="post" novalidate>
+                <form action="" method="post" enctype="multipart/form-data"novalidate>
                     {{ form.hidden_tag() }}
                     <p>
-                        <div class="file-field input-field">
+                        <!--<div class="file-field input-field">
                         <div class="btn">
                           <span>File</span>
                         {{ form.songs() }}
@@ -58,10 +58,18 @@
                     {% for error in form.songs.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}
-                        </p><br/>
+                        </p><br/>-->
+                        {{ form.songs() }}
                         <input type="submit">
                     
-                </form></span></div>
+                </form>
+                <form action="/deletesong" method="post">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit">Deleteall</button>
+                </form>
+            
+            </span></div>
+
             </li>
             </ul>
     </div>

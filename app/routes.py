@@ -2,12 +2,14 @@ from flask import render_template, flash, redirect, url_for, request, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
+from werkzeug import secure_filename
+
 from app import app, db
 from app.models import Song, User
 from app.forms import LoginForm, RegistrationForm, uploadFile
 
 import pandas as pd
-
+import csv
 LIST_SELECTED_SONG = []
 LAST_SONG = None
 
@@ -113,21 +115,29 @@ def addtoList():
     return jsonify(result=True)
 
 
-@app.route('/listdj', methods=['GET','POST'])
+@app.route('/listdj', methods=['GET','POST','DELETE'])
 @login_required
 def getlist():
     if not acces_permission(current_user.role, 1):
         return redirect(url_for('index'))
     
+    
+    print("sono qui")
+
+    if request.method=="POST":
+         print("sono nel submit")
+         #print(request.form["songs"])
+         #print(request.files["songs"].read().decode("UTF-8"))
+         v=request.files["songs"].read().decode("UTF-8").split("\n")
+         print(v)
+         for i in v:
+             print(i[9].encode())
+             j=i.split("|")
+             print(j[0])
+             song=Song(Name=j[0],Artist=j[1],Year=int(j[2]))
+             db.session.add(song)
+         db.session.commit()
     form=uploadFile()
-    if form.validate_on_submit():
-         db = pd.read_csv(songs.data.filename, sep='\t', header=None, names=['title','artist', 'years'])
-         for i in range(0,len(db.title)):
-             print("ciao")
-    #if len(LIST_SELECTED_SONG) == 0:
-     #   for i in range(0, 4):
-      #      LIST_SELECTED_SONG.append(Song(Name="song" + str(i), Artist="Artist" + str(i), Year=i))
-        # print(LIST_SELECTED_SONG[i])
     global  LAST_SONG
     if(len(LIST_SELECTED_SONG)>0):
         LAST_SONG = LIST_SELECTED_SONG[len(LIST_SELECTED_SONG) - 1]
@@ -155,6 +165,18 @@ def updateList():
     if len(sonsSet)<=0:
         return jsonify(result="null")
     return jsonify(result=list(sonsSet))
+
+@app.route('/deletesong', methods=['POST'])
+def deleteallsong():
+    print("sono nella delete")
+    s=Song.query.all()
+    print(s)
+    if len(s)!=0:
+        for i in s:
+            db.session.delete(i)
+        db.session.commit()
+    return redirect(url_for("getlist"))
+
 
 def acces_permission(cuser, perm):
     if (cuser == perm):

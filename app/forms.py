@@ -35,8 +35,10 @@ class RegistrationForm(FlaskForm):
 class uploadFile(FlaskForm):
     songs = FileField("Songs",validators=[DataRequired()])
 
-    def validate_songs(self,songs):
+    """def validate_songs(self,songs):
         try:
+            print("link")
+            print(songs.data.filename)
             db = pd.read_csv(songs.data.filename, sep='\t', header=None, names=['title','artist', 'years'])
         except:
-            raise ValidationError('Please use a file in this format "title \\t artist \\t years " ')
+            raise ValidationError('Please use a file in this format "title \\t artist \\t years " ')"""
