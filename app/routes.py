@@ -75,7 +75,7 @@ def register():
 @app.route("/searchs", methods=["GET"])
 @login_required
 def searchsong():
-    if not acces_permission(current_user.role, 0):
+    if not acces_permission(current_user.role, 0) and not acces_permission(current_user.role, 1) :
         return redirect(url_for('index'))
     if request.method == "GET":
         return render_template("search.html", songs=LIST_SELECTED_SONG)
